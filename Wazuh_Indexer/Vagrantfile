@@ -1,0 +1,39 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bookworm64"
+  config.disksize.size = '100GB'
+  config.vm.hostname = "debian-wazuh-indexer"
+  config.vm.box_check_update = false
+  config.vm.network "private_network", ip: "192.168.56.100", name: "vboxnet0"
+  config.vm.network "public_network", bridge: "wlan0"
+  config.vm.provider "virtualbox" 
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+    vb.cpus = 4
+    vb.name = "Debian-Wazuh-Indexer"
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update /etc/hosts file
+      echo -e "0.0.0.0 debian.wazuh.indexer\n192.168.56.101 debian.wazuh.server\n192.168.56.102 debian.wazuh.dashboard" >> /etc/hosts
+      apt update && apt full-upgrade -y && apt autoremove -y
+      # Remove if exists
+      rm -rf /vagrant/wazuh-certificates
+      # Create certs
+      bash /vagrant/wazuh-certs-tool.sh -A
+      rm -rf /vagrant/wazuh-certificates-tool.log
+      
+      apt-get -y install debconf adduser procps && apt-get -y install gnupg apt-transport-https curl wget lsb-release
+      # Install Wazuh Indexer
+      curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+      echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+      apt-get update && apt-get -y install wazuh-indexer
+      cp -r /vagrant/wazuh-certificates /etc/wazuh-indexer/
+      chmod 500 /etc/wazuh-indexer/wazuh-certificates
+      chmod 400 /etc/wazuh-indexer/wazuh-certificates/*
+      chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/wazuh-certificates
+      cp /vagrant/opensearch.yml /etc/wazuh-indexer/opensearch.yml
+      chmod 660 /etc/wazuh-indexer/opensearch.yml && chown wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/opensearch.yml
+      systemctl daemon-reload && systemctl enable wazuh-indexer && systemctl start wazuh-indexer
+      /usr/share/wazuh-indexer/bin/indexer-security-init.sh
+      systemctl restart wazuh-indexer ## Waiting for service start fully
+    SHELL
+end

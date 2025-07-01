@@ -1,0 +1,16 @@
+nodes:
+  # Wazuh indexer nodes
+  indexer:
+    - name: debian_wazuh_indexer
+      ip: "debian.wazuh.indexer"
+  # Wazuh server nodes
+  # If there is more than one Wazuh server
+  # node, each one must have a node_type
+  server:
+    - name: debian_wazuh_server
+      ip: "debian.wazuh.server"
+
+  # Wazuh dashboard nodes
+  dashboard:
+    - name: debian_wazuh_dashboard
+      ip: "debian.wazuh.dashboard"
