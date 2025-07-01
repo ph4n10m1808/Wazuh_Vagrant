@@ -1,0 +1,38 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bookworm64"
+  config.disksize.size = '100GB'
+  config.vm.hostname = "debian-wazuh-server"
+  config.vm.box_check_update = false
+  config.vm.network "private_network", ip: "192.168.56.101", name: "vboxnet0"
+  config.vm.network "public_network", bridge: "wlan0"
+  config.vm.provider "virtualbox" 
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+    vb.cpus = 2
+    vb.name = "Debian-Wazuh-Server"
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+        # Update /etc/hosts file
+      echo -e "0.0.0.0 debian.wazuh.server\n192.168.56.100 debian.wazuh.indexer\n192.168.56.102 debian.wazuh.dashboard" >> /etc/hosts
+      apt update && apt full-upgrade -y && apt autoremove -y
+      #
+      apt-get -y install debconf adduser procps && apt-get -y install gnupg apt-transport-https curl wget lsb-release
+      # Install Wazuh Indexer
+      curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+      echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+      apt-get update && apt-get -y install wazuh-manager filebeat
+      curl -so /etc/filebeat/filebeat.yml https://packages.wazuh.com/4.12/tpl/wazuh/filebeat/filebeat.yml
+      filebeat keystore create
+      echo admin | filebeat keystore add username --stdin --force && echo admin | filebeat keystore add password --stdin --force
+      curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.4.tar.gz | tar -xvz -C /usr/share/filebeat/module
+      cp -r /vagrant/wazuh-certificates /etc/filebeat/certs
+      chmod 500 /etc/filebeat/certs && chmod 400 /etc/filebeat/certs/* && chown -R root:root /etc/filebeat/certs
+      echo 'admin' | /var/ossec/bin/wazuh-keystore -f indexer -k username && echo 'admin' | /var/ossec/bin/wazuh-keystore -f indexer -k password
+      cp /vagrant/filebeat.yml /etc/filebeat/filebeat.yml
+      curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.12.0/extensions/elasticsearch/7.x/wazuh-template.json && chmod go+r /etc/filebeat/wazuh-template.json
+      chmod 600 /etc/filebeat/filebeat.yml && chown root:root /etc/filebeat/filebeat.yml
+      cp /vagrant/ossec.conf /var/ossec/etc/ossec.conf
+      chmod 660 /var/ossec/etc/ossec.conf && chown root:wazuh /var/ossec/etc/ossec.conf
+      systemctl daemon-reload &&  systemctl enable wazuh-manager filebeat && systemctl start wazuh-manager filebeat
+    SHELL
+end
