@@ -1,0 +1,11 @@
+services:
+  wazuh_python_redis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wazuh_python_redis
+    restart: always
+    volumes:
+      - ./src:/app/
+    extra_hosts:
+      - "wazuh.indexer:192.168.56.160"
