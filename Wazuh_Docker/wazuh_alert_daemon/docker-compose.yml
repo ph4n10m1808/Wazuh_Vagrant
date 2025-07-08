@@ -1,0 +1,11 @@
+services:
+  wazuh_alerts_daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wazuh_alerts_daemon
+    restart: always
+    volumes:
+      - ./src:/app/
+    extra_hosts:
+      - "wazuh.indexer:192.168.56.160"
