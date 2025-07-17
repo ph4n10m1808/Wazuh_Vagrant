@@ -1,0 +1,16 @@
+[
+  "manager",
+  "decoder",
+  "input",
+  "previous_log",
+  "previous_output",
+  "id",
+  "rule.firedtimes",
+  "rule.mail",
+  "rule.pci_dss",
+  "rule.hipaa",
+  "rule.nist_800_53",
+  "rule.tsc",
+  "rule.gpg13",
+  "rule.gdpr"
+]

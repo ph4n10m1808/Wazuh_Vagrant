@@ -1,0 +1,12 @@
+services:
+  normalizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: normalizer
+    restart: always
+    # volumes:
+    #   - ./src:/app/
+    extra_hosts:
+      - "wazuh.indexer:192.168.56.160"
+      - "opensearch-node1:192.168.56.161"
