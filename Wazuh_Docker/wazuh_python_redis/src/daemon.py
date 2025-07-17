@@ -8,7 +8,7 @@ from utils import get_alerts
 
 running = True
 
-# Khởi tạo Redis 1 lần duy nhất
+# Initialize Redis session
 r = redis.Redis(
     host=REDIS["host"],
     port=REDIS["port"],

@@ -6,6 +6,7 @@ from config import WAZUH_INDEXER
 if not WAZUH_INDEXER["verify_ssl"]:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Function to get alerts from Wazuh Indexer
 def get_alerts(from_timestamp=None):
     url = f"{WAZUH_INDEXER['host']}:{WAZUH_INDEXER['port']}/{WAZUH_INDEXER['index']}/_search"
 
@@ -13,7 +14,7 @@ def get_alerts(from_timestamp=None):
     auth = (WAZUH_INDEXER["user"], WAZUH_INDEXER["password"])
 
     query = {
-        "size": 100,
+        "size": 1000,
         "sort": [{"@timestamp": "asc"}],
         "query": {
             "range": {
