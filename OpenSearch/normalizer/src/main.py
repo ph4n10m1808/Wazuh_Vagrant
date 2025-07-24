@@ -24,7 +24,7 @@ def main():
         # Generate dynamic index name based on current date
         index_name = f"{OS_INDEX}-{datetime.utcnow().strftime('%Y.%m.%d')}"
         os_client.index(index=index_name, body=alert)
-        print(f"[+] Normalized alert: {alert['uuid']} - Severity: {alert['severity']}")
+        print(f"[+] Normalized alert: {alert['uuid']}")
 
 if __name__ == "__main__":
     main()
