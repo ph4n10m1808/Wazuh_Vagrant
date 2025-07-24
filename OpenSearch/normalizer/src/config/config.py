@@ -1,4 +1,4 @@
-# src/python/config/config.py
+# src/config/config.py
 
 REDIS_CONF = {
     "host": "wazuh.indexer",

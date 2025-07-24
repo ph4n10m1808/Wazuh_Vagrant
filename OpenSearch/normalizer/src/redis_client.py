@@ -1,4 +1,4 @@
-# src/python/redis_client.py
+# src/redis_client.py
 
 import redis
 from config import REDIS_CONF

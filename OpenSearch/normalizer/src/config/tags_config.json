@@ -1,0 +1,6 @@
+{
+  "host_criticality": {
+    "high": ["testing"],
+    "low": ["debian-wazuh-docker"]
+  }
+}
