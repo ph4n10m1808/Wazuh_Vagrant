@@ -8,4 +8,7 @@ drawio.py
 tempCodeRunnerFile.py
 tempCodeRunnerFile.python
 *.bkp
+.env
+tmp/
+
 

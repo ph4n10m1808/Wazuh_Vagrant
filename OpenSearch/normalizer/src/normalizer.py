@@ -16,7 +16,6 @@ def normalize_alert(alert_data: dict) -> dict:
 
     flattened["uuid"] = str(uuid.uuid4())
     flattened["timestamp"] = alert_data.get("timestamp", "now")
-
     return flattened
 
 def process_alert(alert_json):
