@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  batch-log-send-n8n:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: batch-log-send-n8n
+    extra_hosts:
+      - "opensearch-node1:103.101.77.134"
+    env_file: .env
+    volumes:
+      - ./src1/output:/data/output
+    restart: always
+  send-log-n8n:
+    build:
+      context: src1
+      dockerfile: Dockerfile
+    container_name: send-log-n8n
+    depends_on:
+      - batch-log-send-n8n
+    volumes:
+      - ./src1/output:/data/output
+    restart: always
