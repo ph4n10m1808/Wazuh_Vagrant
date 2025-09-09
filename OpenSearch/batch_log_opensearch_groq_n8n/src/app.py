@@ -57,35 +57,32 @@ def collect_logs():
 
 def prepare_batch_file(logs):
     """Viết logs sang file JSONL để upload lên Groq batch API"""
-    system_prompt = """Bạn là nhà phân tích SOC Tier 1. Dựa trên log đầu vào (cung cấp sau), hãy phân tích và trả về kết quả duy nhất dưới dạng JSON thuần đúng định dạng bên dưới. Không được thêm mô tả, markdown, tiêu đề, hay bất kỳ nội dung nào khác ngoài JSON.
+    system_prompt = """You are a Tier 1 SOC Analyst. Based on the provided input logs (to be given later), analyze and return the result strictly in JSON format as specified below. Do not include any descriptions, markdown, headers, or any content outside of valid JSON.
 
-Yêu cầu xử lý:
+Processing requirements:
 
-Phân loại mức cảnh báo theo mức độ nghiêm trọng: CRITICAL, HIGH, MEDIUM, LOW, INFO
+- Classify the alert severity level as one of: CRITICAL, HIGH, MEDIUM, LOW, INFO  
+- If any information is missing, use "unknown" or null  
+- Do not fabricate details if logs do not provide them  
+- Respond exactly once with valid JSON only
+Mandatory output JSON schema:
 
-Nếu thiếu thông tin, điền "unknown" hoặc null
-
-Không được bịa ra thông tin nếu log không cung cấp
-
-Trả lời duy nhất 1 lần bằng JSON hợp lệ
-
-Mẫu định dạng JSON đầu ra:
 ```json
 {
   "alert_level": "CRITICAL | HIGH | MEDIUM | LOW | INFO",
-  "event_name": "Tên sự kiện hoặc tóm tắt",
-  "detection_time": "Thời gian phát hiện (UTC hoặc local time)",
-  "affected_host": "Tên máy chủ hoặc thiết bị bị ảnh hưởng",
-  "affected_ip": "Địa chỉ IP của máy bị ảnh hưởng",
-  "user_involved": "Tài khoản người dùng liên quan (nếu có)",
-  "event_description": "Mô tả ngắn gọn về sự kiện",
-  "short_analysis": "Phân tích ngắn gọn nguyên nhân và tác động",
-  "potential_risks": "Các rủi ro tiềm ẩn nếu không xử lý",
-  "immediate_actions": "Hành động cần thực hiện ngay để giảm thiểu rủi ro",
-  "playbook_id": "Mã hoặc tên playbook xử lý liên quan",
+  "event_name": "Name of the event or summary",
+  "detection_time": "Detection timestamp (UTC or local time)",
+  "affected_host": "Hostname or device impacted",
+  "affected_ip": "IP address of the affected host",
+  "user_involved": "Relevant user account (if any)",
+  "event_description": "Brief description of the event",
+  "short_analysis": "Short analysis of cause and potential impact",
+  "potential_risks": "Possible risks if left unremediated",
+  "immediate_actions": "Immediate actions required to mitigate risk",
+  "playbook_id": "Identifier or name of applicable response playbook",
   "incident_status": "open | in_progress | resolved | false_positive",
   "rule_changed": "True | False",
-  "Rule Changed": "Thông tin mô tả nếu rule đã bị sửa"
+  "Rule Changed": "Description if the detection rule was modified"
 }
 ```
 """
