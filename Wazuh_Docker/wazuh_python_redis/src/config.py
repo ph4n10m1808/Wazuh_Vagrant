@@ -15,5 +15,5 @@ REDIS = {
     "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81" # Password for Redis
 }
 
-POLL_INTERVAL = 0.5  # Interval in seconds to poll for new alerts
+POLL_INTERVAL = 10  # Interval in seconds to poll for new alerts
 LAST_ALERT_FILE = "last_alert_timestamp.txt" # File to store the timestamp of the last processed alert

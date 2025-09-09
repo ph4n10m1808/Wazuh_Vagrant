@@ -26,15 +26,11 @@ client = OpenSearch(
     verify_certs=False
 )
 
-last_timestamp = None
 
 def collect_logs():
     global last_timestamp
-    end_time = datetime.utcnow()
-    if last_timestamp is None:
-        start_time = end_time - timedelta(seconds=30)
-    else:
-        start_time = last_timestamp
+    start_time = datetime.utcnow() 
+    end_time = datetime.utcnow() - timedelta(seconds=30)
     
     query = {
         "query": {
@@ -50,8 +46,7 @@ def collect_logs():
 
     response = client.search(index=INDEX_NAME, body=query,size=1000)
     logs = [hit["_source"] for hit in response["hits"]["hits"]]
-    if logs:
-        last_timestamp = datetime.fromisoformat(logs[-1]["@timestamp"].replace("Z", "+00:00"))
+    
 
     return logs
 

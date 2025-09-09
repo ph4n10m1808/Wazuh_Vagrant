@@ -10,5 +10,6 @@ tempCodeRunnerFile.python
 *.bkp
 .env
 tmp/
-
+*.jsonl
+*.ovpn
 
